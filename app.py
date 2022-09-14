@@ -1,13 +1,13 @@
 from flask import Flask , request, jsonify
 from flask_pymongo import PyMongo
-from ..Users.users_storage import UsersMongoStorage
-from ..Users.users_service import UserService
-from ..Customers.customers_storage import CustomerMongoStorage
-from ..Customers.customers_service import CustomerService
-from ..Baskets.baskets_storage import BasketsMongoStorage
-from ..Baskets.baskets_service import BasketService
-from ..Products.products_storage import ProductMongoStorage
-from ..Products.products_service import ProductService
+from Users.users_storage import UsersMongoStorage
+from Users.users_service import UserService
+from Customers.customers_storage import CustomerMongoStorage
+from Customers.customers_service import CustomerService
+from Baskets.baskets_storage import BasketsMongoStorage
+from Baskets.baskets_service import BasketService
+from Products.products_storage import ProductMongoStorage
+from Products.products_service import ProductService
 from bson.objectid import ObjectId
 from datetime import datetime
 
