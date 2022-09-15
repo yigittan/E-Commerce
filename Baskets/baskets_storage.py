@@ -1,5 +1,4 @@
 from bson.objectid import ObjectId
-from ..RUN.app import product_service 
 
 class BasketsMongoStorage:
     def __init__(self,client):

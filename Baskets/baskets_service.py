@@ -1,5 +1,4 @@
 from bson.objectid import ObjectId
-from ..app import product_service
 
 class BasketService:
     def __init__(self,baskets_storage):
