@@ -3,8 +3,10 @@ from bson.objectid import ObjectId
 class BasketsMongoStorage:
     def __init__(self,client):
         self.db = client.db.baskets
+        
 
     def insert(self,id):
+        id = ObjectId(id)
         self.db.insert_one({
             "products":[],
             "price":0.00,
@@ -21,19 +23,21 @@ class BasketsMongoStorage:
             "customer_id":basket['customer_id']
         }
     
-    def add_to_basket(self,id,product_id):
-        product = product_service.get_by_id(ObjectId(product_id))
-        basket = self.db.find_one({'_id':ObjectId(id)})
-        self.db.update_one({'_id':ObjectId(id)}, {'$push': {"product":product}})
-        basket = self.db.find_one({'_id':ObjectId(id)})
-        return [{
-            "id":str(ObjectId(product['_id'])),
-            "title":product['title'],
-            "price":product['price'],
-            "description":product['description'],
-            "category":product['category'],
-            "created_at":product['created_at'],
-            "discount":product['discount'],
-            "size":product['size'],
-            "color":product['color']
-        } for product in basket['products']]
+    def add_to_basket(self,basket_id,product_id):
+        basket_id = ObjectId(basket_id)
+        product_id = ObjectId(product_id)
+        self.db.update_one({'_id':ObjectId(basket_id)} , {'$push': {'products':product_id}})
+        basket = self.db.find_one({'_id':basket_id})
+        return {
+            "id_basket":str(ObjectId(basket['_id'])),
+            "price":basket['price'],
+            "customer_id":str(basket['customer_id']),
+            "products":str(basket['products'])
+        }
+
+    def delete_from_basket(self,basket_id,product_id):
+        basket_id = ObjectId(basket_id)
+        product_id = ObjectId(product_id)
+        self.db.update_one({'_id':ObjectId(basket_id)} , {'$pull': {'products':product_id}})
+        basket = self.db.find_one({'_id':basket_id})
+        return str(ObjectId(basket['_id']))

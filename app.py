@@ -19,10 +19,10 @@ u_storage = UsersMongoStorage(mongo_client)
 user_service = UserService(u_storage)
 c_storage = CustomerMongoStorage(mongo_client)
 customer_service = CustomerService(c_storage)
-b_storage = BasketsMongoStorage(mongo_client)
-basket_service = BasketService(b_storage)
 p_storage = ProductMongoStorage(mongo_client)
 product_service = ProductService(p_storage)
+b_storage = BasketsMongoStorage(mongo_client)
+basket_service = BasketService(b_storage,p_storage)
 
 STATUS_OK = 200
 STATUS_CREATED = 201
@@ -104,19 +104,23 @@ def update_product(id):
     product = product_service.update_product(id,title,price,description,category,created_at,discount,size,color)
     return jsonify(product),STATUS_OK
 
-@app.route('/basket/<string:id>' , methods = ['GET'], endpoint = 'get_basket')
+@app.route('/baskets/<string:id>' , methods = ['GET'], endpoint = 'get_basket')
 @http_err_handler
 def get_basket(id):
     basket = basket_service.get_by_id(id)
-    return basket['product']
+    return jsonify(basket)
 
-@app.route('/baskets/<string:id>/add/<string:product_id>' , methods=['POST'],endpoint = 'add_to_basket')
+@app.route('/baskets/<string:basket_id>/add/<string:product_id>' , methods=['POST'], endpoint = 'add_to_basket')
 @http_err_handler
-def add_to_basket(id,product_id):
-    basket_products = basket_service.add_to_basket(id,product_id)
-    return basket_products['products']
+def add_to_basket(basket_id,product_id):
+    basket = basket_service.add_to_basket(basket_id,product_id)
+    return jsonify(basket['products'])
 
-    
+@app.route('/baskets/<string:basket_id>/delete/<string:product_id>', methods=['DELETE'] , endpoint='delete_from_basket')
+@http_err_handler
+def delete_from_basket(basket_id,product_id):
+    basket = basket_service.delete_from_basket(basket_id,product_id)
+    return basket  
 
 
     

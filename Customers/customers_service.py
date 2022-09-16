@@ -5,4 +5,5 @@ class CustomerService:
         self.customers_storage = customers_storage
 
     def create(self,name,email,id):
+        id = ObjectId(id)
         return self.customers_storage.insert(name,email,id)
