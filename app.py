@@ -1,4 +1,3 @@
-from crypt import methods
 from flask import Flask, request, jsonify , session
 from functools import wraps
 from flask_pymongo import PyMongo
@@ -101,6 +100,7 @@ def signup():
     email = body['email']
     password = body['password']
     user_id = user_service.create(name, email, password)
+    print(ObjectId(user_id))
     customer_id = customer_service.create(
         name, email, id=str(ObjectId(user_id)))
     basket_id = basket_service.create(id=str(ObjectId(customer_id)))
@@ -176,7 +176,7 @@ def delete_from_basket(basket_id, product_id):
 def delete_all(basket_id):
     return basket_service.delete_all(basket_id)
 
-@app.route('/customer/<string:customer_id>/update', methods=['POST'],endpoint = 'update_customer')
+@app.route('/customers/<string:customer_id>/update', methods=['POST'],endpoint = 'update_customer')
 @isLogin
 def update_customer(customer_id):
     body = request.get_json()
@@ -184,6 +184,28 @@ def update_customer(customer_id):
     email = body['email']
     customer = customer_service.update_customer(customer_id,name,email)
     return jsonify(customer)
+
+@app.route('/customers/<string:customer_id>/info' , methods=['POST'], endpoint = 'set_customer_info')
+# @isLogin
+def set_customer_info(customer_id):
+    body = request.get_json()
+    city = body['city']
+    street_no = body['street_no']
+    building_no = body['building_no']
+    phone_no = body['phone_no']
+    customer_info = customer_service.set_customer_info(customer_id,city,street_no,building_no,phone_no)
+    return jsonify(customer_info)
+
+@app.route('/customers/<string:customer_id>/updateinfo' , methods=['PUT'],endpoint = 'update_customer_info')
+def update_customer_info(customer_id):
+    body = request.get_json()
+    city = body['city']
+    street_no = body['street_no']
+    building_no = body['building_no']
+    phone_no = body['phone_no']
+    customer_info = customer_service.update_customer_info(customer_id,city,street_no,building_no,phone_no)
+    return jsonify(customer_info)
+
 
 if __name__ == '__main__':
     app.secret_key = "1234"

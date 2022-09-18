@@ -5,10 +5,12 @@ class CustomerMongoStorage:
         self.db = client.db.customers
 
     def insert(self,name,email,id):
+        id = ObjectId(id)
         self.db.insert_one({
             "name":name,
             "email":email,
-            "user_id":str(ObjectId(id))
+            "user_id":str(ObjectId(id)),
+            "customer_info":[]
         })
 
     def update_customer(self,customer_id,name,email):
@@ -23,3 +25,14 @@ class CustomerMongoStorage:
             "email":email,
             "user_id":customer['user_id']
         }
+
+    def set_customer_info(self,customer_id,city,street_no,building_no,phone_no):
+        self.db.update_one({'_id':ObjectId(customer_id)} , {"$push": {'customer_info': {"city":city , "street":street_no , "building":building_no , "phone":phone_no}}})
+        customer = self.db.find_one({'_id':ObjectId(customer_id)})
+        return customer['customer_info']
+
+
+    def update_customer_info(self,customer_id,city,street_no,building_no,phone_no):
+        self.db.update_one({'_id':ObjectId(customer_id)} , {"$set": {"customer_info" : {"city":city , "street":street_no , "building":building_no , "phone":phone_no}}})
+        customer = self.db.find_one({'_id':ObjectId(customer_id)})
+        return customer['customer_info']
