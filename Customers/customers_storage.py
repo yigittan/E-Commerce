@@ -10,3 +10,16 @@ class CustomerMongoStorage:
             "email":email,
             "user_id":str(ObjectId(id))
         })
+
+    def update_customer(self,customer_id,name,email):
+        customer = self.db.find_one({'_id':customer_id})
+        if customer is None:
+            return {'messages':'customer not found'}
+        self.db.update_one({'_id':customer_id} , {"$set": {"name":name,"email":email}})
+        customer = self.db.find_one({'_id':customer_id})
+        return {
+            "id":customer['_id'],
+            "name":name,
+            "email":email,
+            "user_id":customer['user_id']
+        }

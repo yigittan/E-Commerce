@@ -38,6 +38,12 @@ class BasketsMongoStorage:
     def delete_from_basket(self,basket_id,product_id):
         basket_id = ObjectId(basket_id)
         product_id = ObjectId(product_id)
-        self.db.update_one({'_id':ObjectId(basket_id)} , {'$pull': {'products':product_id}})
+        self.db.update_one({'_id':basket_id} , {'$pull': {'products':product_id}})
         basket = self.db.find_one({'_id':basket_id})
-        return str(ObjectId(basket['_id']))
+        return str(basket['_id'])
+
+    def delete_all(self,basket_id):
+        basket_id = ObjectId(basket_id)
+        self.db.update_one({'_id':basket_id} , {"$set": {'products': []}})
+        basket = self.db.find_one({'_id':basket_id})
+        return str(basket['_id'])

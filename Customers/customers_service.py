@@ -7,3 +7,6 @@ class CustomerService:
     def create(self,name,email,id):
         id = ObjectId(id)
         return self.customers_storage.insert(name,email,id)
+    
+    def update_customer(self,customer_id,name,email):
+        return self.customers_storage.update_customer(customer_id,name,email)
