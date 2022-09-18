@@ -1,5 +1,4 @@
 from bson.objectid import ObjectId
-from .ProductsClass import Product
 
 class ProductMongoStorage:
     def __init__(self,client):
@@ -45,6 +44,30 @@ class ProductMongoStorage:
             "size":product['size'],
             "color":product['color']
         }
+
+    def get_by_category(self,category):
+        products = self.db.find()
+        liste = []
+        for product in products:
+            if product['category'] == category:
+                liste.append(product)
+        if len(liste) ==0:
+            return {'messages':"Category not found"}
+        else:
+            return [{
+                "id":str(ObjectId(item['_id'])),
+                "title":item['title'],
+                "price":item['price'],
+                "description":item['description'],
+                "category":item['category'],
+                "created_at":item['created_at'],
+                "discount":item['discount'],
+                "size":item['size'],
+                "color":item['color']
+            } for item in liste]
+                    
+
+
 
     def update_product(self,id,title,price,description,category,created_at,discount,size,color):
         print("asdsad")

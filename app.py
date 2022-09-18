@@ -130,6 +130,11 @@ def get_all():
     products = product_service.get_all()
     return jsonify(products), STATUS_OK
 
+@app.route('/products/<string:category>' , methods=['GET'],endpoint = 'get_category')
+def get_category(category):
+    products = product_service.get_by_category(category)
+    return jsonify(products)
+
 
 @app.route('/products/<string:id>', methods=['GET'], endpoint='get_product')
 @http_err_handler

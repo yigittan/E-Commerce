@@ -1,4 +1,3 @@
-from .ProductsClass import Product
 
 class ProductService:
     def __init__(self, product_storage):
@@ -15,6 +14,9 @@ class ProductService:
         if product is None:
             return {'message':'Product not found'}
         return product
+
+    def get_by_category(self,category):
+        return self.product_storage.get_by_category(category)
 
     def update_product(self,id,new_product_name,new_product_price):
         self.product_storage.update_product(id,new_product_name,new_product_price)
