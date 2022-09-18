@@ -36,3 +36,7 @@ class CustomerMongoStorage:
         self.db.update_one({'_id':ObjectId(customer_id)} , {"$set": {"customer_info" : {"city":city , "street":street_no , "building":building_no , "phone":phone_no}}})
         customer = self.db.find_one({'_id':ObjectId(customer_id)})
         return customer['customer_info']
+    
+    def get_customer_info(self,customer_id):
+        customer = self.db.find_one({'_id':ObjectId(customer_id)})
+        return customer['customer_info']

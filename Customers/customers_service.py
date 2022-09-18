@@ -17,3 +17,7 @@ class CustomerService:
 
     def update_customer_info(self,customer_id,city,street_no,building_no,phone_no):
         return self.customers_storage.update_customer_info(customer_id,city,street_no,building_no,phone_no)
+
+    def get_customer_info(self,customer_id):
+        return self.customers_storage.get_customer_info(customer_id)
+        

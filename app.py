@@ -206,6 +206,11 @@ def update_customer_info(customer_id):
     customer_info = customer_service.update_customer_info(customer_id,city,street_no,building_no,phone_no)
     return jsonify(customer_info)
 
+@app.route('/customers/<string:customer_id>/info' , methods=['GET'],endpoint = 'get_customer_info')
+def get_customer_info(customer_id):
+    customer_info = customer_service.get_customer_info(customer_id)
+    return jsonify(customer_info)
+
 
 if __name__ == '__main__':
     app.secret_key = "1234"
