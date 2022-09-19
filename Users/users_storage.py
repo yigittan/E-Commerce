@@ -14,7 +14,7 @@ class UsersMongoStorage:
             "street":user.street,
             "building":user.building,
         })
-        return res.inserted_id
+        return str(res.inserted_id)
 
     def getUser_by_email(self,email):
         user = self.db.find_one({'email':email})

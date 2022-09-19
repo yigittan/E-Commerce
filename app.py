@@ -9,6 +9,7 @@ from users.users_storage import UsersMongoStorage
 from users.User import User
 from products.Product import Product
 from bson.objectid import ObjectId
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -32,6 +33,7 @@ def loginUser(email):
 def index():
     return {'messages': "You Are At Index Page :)"}
 
+# KULLANICI KAYDI REGİSTER
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -49,7 +51,9 @@ def register():
                 city, zip_code, street, building)
     res = users_service.create(user)
     baskets_service.create(res)
-    return str(res)
+    return res
+
+# KULLANICI GİRİŞİ LOG İN
 
 @app.route('/login',methods=['POST'])
 def login():
@@ -64,6 +68,25 @@ def login():
         else:
             return jsonify({'messages':"log in is failed"})
 
+@app.route('/products' , methods=['GET','POST'])
+def products():
+    if request.method == 'GET':
+        products = products_service.get_all_products()
+        if products is None:
+            return {'message':'Products not found'}
+        return jsonify(products)
+    if request.method == 'POST':
+        body = request.get_json()
+        name = body['name']
+        price = body['price']
+        description = body['description']
+        created_at = datetime.now()
+        discount = body['discount']
+        size = body['size']
+        color = body['color']
+        product = Product(name,price,description,created_at,discount,size,color)
+        res = products_service.create(product)
+        return jsonify(res)
 
 
 if __name__ == '__main__':
