@@ -1,5 +1,3 @@
-import json
-from unicodedata import category
 from flask import Flask, request, jsonify , session
 from flask_pymongo import PyMongo
 from products.products_service import ProductService
@@ -8,6 +6,8 @@ from baskets.baskets_service import BasketService
 from baskets.baskets_storage import BasketMongoStorage
 from users.users_service import UserService
 from users.users_storage import UsersMongoStorage
+from orders.orders_service import OrderService
+from orders.orders_storage import OrdersMongoStorage
 from users.User import User
 from products.Product import Product
 from bson.objectid import ObjectId
@@ -23,13 +23,14 @@ b_storage = BasketMongoStorage(client)
 baskets_service = BasketService(b_storage)
 u_storage = UsersMongoStorage(client)
 users_service = UserService(u_storage)
+o_storage = OrdersMongoStorage(client)
+orders_service = OrderService(o_storage)
 
 def loginUser(email):
     user = users_service.getUser_by_email(email)
     session['logged_in'] = True
     session['email'] = email
     session['id'] = user['_id']
-
 
 @app.route('/')
 def index():
@@ -159,11 +160,11 @@ def users(user_id):
     if request.method == 'DELETE':
         return users_service.remove(user_id)
 
-@app.route('/baskets<string:basket_id>' , methods=['GET'])
+@app.route('/baskets/<string:basket_id>' , methods=['GET'])
 def basket(basket_id):
     if request.method == 'GET':
         basket = baskets_service.get_by_id(basket_id)
-        return jsonify(basket)
+        return jsonify(basket['products'])
 
 @app.route('/baskets/<string:basket_id>/products/<string:product_id>' , methods=['POST','DELETE'])
 def basket_cd(basket_id,product_id):
@@ -175,10 +176,20 @@ def basket_cd(basket_id,product_id):
         basket = baskets_service.remove(basket_id,product_id)
         return jsonify(basket)
 
-@app.route('/baskets/<string:basket_id>' , methods=['DELETE'])
+@app.route('/baskets/<string:basket_id>/clear' , methods=['DELETE'])
 def basket_clear(basket_id):
     basket  = baskets_service.clear(basket_id)
     return jsonify(basket)
+
+@app.route('/orders/<string:basket_id>' , methods=['GET','POST'])
+def order(basket_id):
+    if request.method == 'POST':
+        basket = baskets_service.get_by_id(basket_id)
+        products_id = [product_id for product_id in basket['products']]
+        res = orders_service.create(products_id)
+        return res
+    
+
 
     
     
