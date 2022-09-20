@@ -117,6 +117,31 @@ def productss(product_id):
     if request.method == 'DELETE':
         return products_service.remove(product_id)
 
+@app.route('/users/<string:user_id>' , methods=['GET','DELETE','PUT'])
+def users(user_id):
+    if request.method == 'GET':
+        user = users_service.get_by_id(user_id)
+        return jsonify(user)
+
+    if request.method == 'PUT':
+        body = request.get_json()
+        name = body['name']
+        surname = body['surname']
+        username = body['username']
+        email = body['email']
+        password = body['password']
+        city = body['city']
+        zip_code = body['zip_code']
+        street = body['street']
+        building = body['building']
+        user = User(name, surname, username, email, password,
+                    city, zip_code, street, building)
+        res = users_service.update(user,user_id)
+        return jsonify(res)
+
+    if request.method == 'DELETE':
+        return users_service.remove(user_id)
+
 
 if __name__ == '__main__':
     app.secret_key = 'secret_key'
