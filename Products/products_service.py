@@ -17,5 +17,5 @@ class ProductService:
     def remove(self,product_id):
         return self.storage.remove(product_id)
 
-    def filter(self,brand):
-        return self.storage.filter(brand)
+    def filter(self,brand,name):
+        return self.storage.filter(brand,name)

@@ -96,7 +96,8 @@ def products():
 @app.route('/products/filter')
 def params():
     brand = request.args['brand']
-    products = products_service.filter(brand)
+    name = request.args['name']
+    products = products_service.filter(brand,name)
     return jsonify(products)
 
 @app.route('/products/<string:product_id>' , methods=['GET','PUT','DELETE'])

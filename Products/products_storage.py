@@ -71,9 +71,9 @@ class ProductMongoStorage:
         self.db.delete_one({'_id':ObjectId(product_id)})
         return product_id
 
-    def filter(self,brand):
-        products_by_name = self.db.find({'brand':brand})
-        return [{
+    def filter(self,brand,name):
+        products_by_brand = self.db.find({'brand':brand})
+        brand_array =  [{
             "name":product['name'],
             "price":product['price'],
             "brand":product['brand'],
@@ -82,5 +82,23 @@ class ProductMongoStorage:
             "discount":product['discount'],
             "size":product['size'],
             "color":product['color']
-        } for product in products_by_name ]
+        } for product in products_by_brand ]
+
+        products_by_name = self.db.find({'name':name})
+        name_array = [{
+            "name":product['name'],
+            "price":product['price'],
+            "brand":product['brand'],
+            "description":product['description'],
+            "created_at":product['created_at'],
+            "discount":product['discount'],
+            "size":product['size'],
+            "color":product['color']
+        } for product in products_by_name
+        ]
         
+        last_array = brand_array + name_array
+        
+        return last_array
+
+       
