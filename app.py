@@ -1,3 +1,4 @@
+from unicodedata import category
 from flask import Flask, request, jsonify , session
 from flask_pymongo import PyMongo
 from products.products_service import ProductService
@@ -68,6 +69,8 @@ def login():
         else:
             return jsonify({'messages':"log in is failed"})
 
+#  ÜRÜNLERİ LİSTELEMEK VE ÜRÜN EKLEMEK İÇİN
+
 @app.route('/products' , methods=['GET','POST'])
 def products():
     if request.method == 'GET':
@@ -79,14 +82,40 @@ def products():
         body = request.get_json()
         name = body['name']
         price = body['price']
+        brand = body['brand']
         description = body['description']
+        category = body['category']
         created_at = datetime.now()
         discount = body['discount']
         size = body['size']
         color = body['color']
-        product = Product(name,price,description,created_at,discount,size,color)
+        product = Product(name,price,brand,description,category,created_at,discount,size,color)
         res = products_service.create(product)
         return jsonify(res)
+
+@app.route('/products/<string:product_id>' , methods=['GET','PUT','DELETE'])
+def productss(product_id):
+    if request.method == 'GET':
+        product = products_service.get_by_id(product_id)
+        return jsonify(product)
+    
+    if request.method == 'PUT':
+        body = request.get_json()
+        name = body['name']
+        price = body['price']
+        brand= body['brand']
+        description = body['description']
+        category = body['category']
+        created_at = datetime.now()
+        discount = body['discount']
+        size = body['size']
+        color = body['color']
+        product = Product(name,price,brand,description,category,created_at,discount,size,color)
+        res = products_service.update(product,product_id)
+        return jsonify(res)
+
+    if request.method == 'DELETE':
+        return products_service.remove(product_id)
 
 
 if __name__ == '__main__':
