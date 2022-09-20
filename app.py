@@ -1,3 +1,4 @@
+import json
 from unicodedata import category
 from flask import Flask, request, jsonify , session
 from flask_pymongo import PyMongo
@@ -95,10 +96,19 @@ def products():
 
 @app.route('/products/filter')
 def params():
-    brand = request.args['brand']
-    name = request.args['name']
-    products = products_service.filter(brand,name)
+    arg = request.args
+    brand = arg.get('brand')
+    name = arg.get('name')
+    color = arg.get('color')
+    products = products_service.filter(brand,name,color)
     return jsonify(products)
+
+
+
+    # brand = request.args['brand']
+    # name = request.args['name']
+    # products = products_service.filter(brand,name)
+    # return jsonify(products)
 
 @app.route('/products/<string:product_id>' , methods=['GET','PUT','DELETE'])
 def productss(product_id):
