@@ -10,3 +10,9 @@ class BasketService:
 
     def add(self,basket_id,product_id):
         return self.storage.add(basket_id,product_id)
+
+    def remove(self,basket_id,product_id):
+        return self.storage.remove(basket_id,product_id)
+
+    def clear(self,basket_id):
+        return self.storage.clear(basket_id)

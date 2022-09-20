@@ -70,3 +70,17 @@ class ProductMongoStorage:
             return {'messages':'product not found'}
         self.db.delete_one({'_id':ObjectId(product_id)})
         return product_id
+
+    def filter(self,brand):
+        products_by_name = self.db.find({'brand':brand})
+        return [{
+            "name":product['name'],
+            "price":product['price'],
+            "brand":product['brand'],
+            "description":product['description'],
+            "created_at":product['created_at'],
+            "discount":product['discount'],
+            "size":product['size'],
+            "color":product['color']
+        } for product in products_by_name ]
+        

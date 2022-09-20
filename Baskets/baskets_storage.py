@@ -27,3 +27,13 @@ class BasketMongoStorage:
             "products":basket['products'],
             "user_id":basket['user_id']
         }
+
+    def remove(self,basket_id,product_id):
+        self.db.update_one({'_id':ObjectId(basket_id)} , {"$pull" : {'products':product_id}})
+        basket = self.db.find_one({'_id':ObjectId(basket_id)})
+        return {"products":basket['products']}
+
+    def clear(self,basket_id):
+        self.db.update_one({'_id':ObjectId(basket_id)} , {"$set": {'products': []}})
+        basket = self.db.find_one({'_id':ObjectId(basket_id)})
+        return {"products":basket['products']}

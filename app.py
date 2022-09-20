@@ -93,6 +93,12 @@ def products():
         res = products_service.create(product)
         return jsonify(res)
 
+@app.route('/products/filter')
+def params():
+    brand = request.args['brand']
+    products = products_service.filter(brand)
+    return jsonify(products)
+
 @app.route('/products/<string:product_id>' , methods=['GET','PUT','DELETE'])
 def productss(product_id):
     if request.method == 'GET':
@@ -149,10 +155,19 @@ def basket(basket_id):
         return jsonify(basket)
 
 @app.route('/baskets/<string:basket_id>/products/<string:product_id>' , methods=['POST','DELETE'])
-def baskett(basket_id,product_id):
+def basket_cd(basket_id,product_id):
     if request.method == 'POST':
         basket = baskets_service.add(basket_id,product_id)
         return jsonify(basket['products'])
+
+    if request.method == 'DELETE':
+        basket = baskets_service.remove(basket_id,product_id)
+        return jsonify(basket)
+
+@app.route('/baskets/<string:basket_id>' , methods=['DELETE'])
+def basket_clear(basket_id):
+    basket  = baskets_service.clear(basket_id)
+    return jsonify(basket)
 
     
     
