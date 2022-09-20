@@ -142,6 +142,22 @@ def users(user_id):
     if request.method == 'DELETE':
         return users_service.remove(user_id)
 
+@app.route('/baskets<string:basket_id>' , methods=['GET'])
+def basket(basket_id):
+    if request.method == 'GET':
+        basket = baskets_service.get_by_id(basket_id)
+        return jsonify(basket)
+
+@app.route('/baskets/<string:basket_id>/products/<string:product_id>' , methods=['POST','DELETE'])
+def baskett(basket_id,product_id):
+    if request.method == 'POST':
+        basket = baskets_service.add(basket_id,product_id)
+        return jsonify(basket['products'])
+
+    
+    
+
+
 
 if __name__ == '__main__':
     app.secret_key = 'secret_key'
