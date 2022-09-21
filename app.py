@@ -101,15 +101,16 @@ def params():
     brand = arg.get('brand')
     name = arg.get('name')
     color = arg.get('color')
-    products = products_service.filter(brand,name,color)
+    filter_query =  {}
+    if brand is not None:
+        filter_query['brand'] = brand
+    if color is not None:
+        filter_query['color'] = color
+    if name is not None:
+        filter_query['name'] = name
+    products = products_service.filter(filter_query)
     return jsonify(products)
 
-
-
-    # brand = request.args['brand']
-    # name = request.args['name']
-    # products = products_service.filter(brand,name)
-    # return jsonify(products)
 
 @app.route('/products/<string:product_id>' , methods=['GET','PUT','DELETE'])
 def productss(product_id):
@@ -184,10 +185,18 @@ def basket_clear(basket_id):
 @app.route('/orders/<string:basket_id>' , methods=['GET','POST'])
 def order(basket_id):
     if request.method == 'POST':
+        user_id = session['id']
         basket = baskets_service.get_by_id(basket_id)
         products_id = [product_id for product_id in basket['products']]
-        res = orders_service.create(products_id)
+        res = orders_service.create(products_id,user_id)
         return res
+    
+    if request.method =='GET':
+        user_id = session['id']
+        order = orders_service.get(user_id)
+        return jsonify(order['products'])
+
+
     
 
 
