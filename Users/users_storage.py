@@ -20,15 +20,13 @@ class UsersMongoStorage:
 
     def getUser_by_email(self, email):
         user = self.db.find_one({'email': email})
-        if user is None:
-            print("user yok")
-        return user
-        # {
-        #     "id": str(user['_id']),
-        #     "name": user['name'],
-        #     "surname": user['surname'],
-        #     "username": user['username']
-        #     }
+        
+        return {
+                "id": str(user['_id']),
+                "name": user['name'],
+                "surname": user['surname'],
+                "username": user['username']
+                }
 
     def check_password(self, email, candidatePassword):
         user = self.db.find_one({'email':email})

@@ -7,8 +7,11 @@ class UserService:
         return self.storage.insert(user)
 
     def getUser_by_email(self, email):
-        return self.storage.getUser_by_email(email)
-
+        res = self.storage.getUser_by_email(email)
+        if res is None:
+            return {'messages':"User not found"}
+        return res
+        
     def check_password(self, email, candidatePassword):
         return self.storage.check_password(email, candidatePassword)
 

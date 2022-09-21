@@ -8,8 +8,8 @@ class BasketService:
     def get_by_id(self,basket_id):
         return self.storage.get_by_id(basket_id)
 
-    def add(self,basket_id,product_id):
-        return self.storage.add(basket_id,product_id)
+    def add(self,basket_id,product_id,price):
+        return self.storage.add(basket_id,product_id,price)
 
     def remove(self,basket_id,product_id):
         return self.storage.remove(basket_id,product_id)

@@ -19,8 +19,9 @@ class BasketMongoStorage:
             "user_id":basket['user_id']
         }
 
-    def add(self,basket_id,product_id):
+    def add(self,basket_id,product_id,price):
         self.db.update_one({'_id':ObjectId(basket_id)} , {"$push": {'products':product_id}})
+        self.db.update_one({'_id':ObjectId(basket_id)} , {"$set":  {'price':price}})
         basket = self.get_by_id(basket_id)
         return {
             "price":basket['price'],

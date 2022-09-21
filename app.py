@@ -30,7 +30,7 @@ def loginUser(email):
     user = users_service.getUser_by_email(email)
     session['logged_in'] = True
     session['email'] = email
-    session['id'] = user['_id']
+    session['id'] = user['id']
 
 @app.route('/')
 def index():
@@ -134,7 +134,7 @@ def productss(product_id):
         return jsonify(res)
 
     if request.method == 'DELETE':
-        return products_service.remove(product_id)
+        return product_id
 
 @app.route('/users/<string:user_id>' , methods=['GET','DELETE','PUT'])
 def users(user_id):
@@ -160,7 +160,7 @@ def users(user_id):
 
     if request.method == 'DELETE':
         return users_service.remove(user_id)
-
+        
 @app.route('/baskets/<string:basket_id>' , methods=['GET'])
 def basket(basket_id):
     if request.method == 'GET':
@@ -170,25 +170,29 @@ def basket(basket_id):
 @app.route('/baskets/<string:basket_id>/products/<string:product_id>' , methods=['POST','DELETE'])
 def basket_cd(basket_id,product_id):
     if request.method == 'POST':
-        basket = baskets_service.add(basket_id,product_id)
-        return jsonify(basket['products'])
+        product = products_service.get_by_id(product_id)
+        basket= baskets_service.get_by_id(basket_id)
+        price = product['price'] + basket['price']
+        basket = baskets_service.add(basket_id,product_id,price)
+        return jsonify(basket['price'])
 
     if request.method == 'DELETE':
         basket = baskets_service.remove(basket_id,product_id)
-        return jsonify(basket)
+        return jsonify(basket['products'])
 
 @app.route('/baskets/<string:basket_id>/clear' , methods=['DELETE'])
 def basket_clear(basket_id):
     basket  = baskets_service.clear(basket_id)
-    return jsonify(basket)
+    return jsonify(basket['products'])   # basket bırakırsak 'products' = [......] array halinde geliyor
 
 @app.route('/orders/<string:basket_id>' , methods=['GET','POST'])
 def order(basket_id):
     if request.method == 'POST':
         user_id = session['id']
         basket = baskets_service.get_by_id(basket_id)
+        price = basket['price']
         products_id = [product_id for product_id in basket['products']]
-        res = orders_service.create(products_id,user_id)
+        res = orders_service.create(products_id,user_id,price)
         return res
     
     if request.method =='GET':

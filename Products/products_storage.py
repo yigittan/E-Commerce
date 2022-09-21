@@ -83,60 +83,6 @@ class ProductMongoStorage:
         else:
             return {'messages':'Aradığınız kriterde ürün bulunamadı'}
 
-
-        # if brand:
-        #     products_by_brand = self.db.find({'brand':brand})
-        #     brand_array =  [{
-        #         "name":product['name'],
-        #         "price":product['price'],
-        #         "brand":product['brand'],
-        #         "description":product['description'],
-        #         "created_at":product['created_at'],
-        #         "discount":product['discount'],
-        #         "size":product['size'],
-        #         "color":product['color']
-        #     } for product in products_by_brand ]
-            
-        #     if len(brand_array) >0:
-        #         return brand_array
-        #     else:
-        #         print(len(brand_array))
-        #         return {'messages':'Aradığınız kriterde sonuç bulunmadı'}
-        # if name:
-        #     products_by_name = self.db.find({'name':name})
-        #     name_array =  [{
-        #         "name":product['name'],
-        #         "price":product['price'],
-        #         "brand":product['brand'],
-        #         "description":product['description'],
-        #         "created_at":product['created_at'],
-        #         "discount":product['discount'],
-        #         "size":product['size'],
-        #         "color":product['color']
-        #     } for product in products_by_name ]
-        #     if len(name_array) > 0 :
-        #         return name_array
-        #     else:
-        #         return {'messages':'aradığınız kriterde sonuç bulunamadı'}
-
-        # if color:
-        #     products_by_color = self.db.find({'color':color})
-        #     color_array = [{
-        #         "name":product['name'],
-        #         "price":product['price'],
-        #         "brand":product['brand'],
-        #         "description":product['description'],
-        #         "created_at":product['created_at'],
-        #         "discount":product['discount'],
-        #         "size":product['size'],
-        #         "color":product['color']
-        #     } for product in products_by_color ]
-            
-        #     if len(color_array) > 0:
-        #         return color_array
-        #     else : 
-        #         return {'messages':'Aradığınız kriterde sonuç bulunamadı'}
-       
     
 
        
