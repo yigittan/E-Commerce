@@ -183,6 +183,7 @@ def basket_cd(basket_id,product_id):
 @app.route('/baskets/<string:basket_id>/clear' , methods=['DELETE'])
 def basket_clear(basket_id):
     basket  = baskets_service.clear(basket_id)
+    basket['price'] = 0
     return jsonify(basket['products'])   # basket bırakırsak 'products' = [......] array halinde geliyor
 
 @app.route('/orders/<string:basket_id>' , methods=['GET','POST'])
@@ -201,10 +202,6 @@ def order(basket_id):
         return jsonify(order['products'])
 
 
-    
-
-
-    
     
 
 

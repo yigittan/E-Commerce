@@ -35,6 +35,6 @@ class BasketMongoStorage:
         return {"products":basket['products']}
 
     def clear(self,basket_id):
-        self.db.update_one({'_id':ObjectId(basket_id)} , {"$set": {'products': []}})
+        self.db.update_one({'_id':ObjectId(basket_id)} , {"$set": {'products': [] , 'price':0}})
         basket = self.db.find_one({'_id':ObjectId(basket_id)})
         return {"products":basket['products']}
