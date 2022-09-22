@@ -103,11 +103,11 @@ def params():
     color = arg.get('color')
     filter_query =  {}
     if brand is not None:
-        filter_query['brand'] = brand
+        filter_query.update({'brand':brand})
     if color is not None:
-        filter_query['color'] = color
+        filter_query.update({'color':color})
     if name is not None:
-        filter_query['name'] = name
+        filter_query.update({'name':name})
     products = products_service.filter(filter_query)
     return jsonify(products)
 
