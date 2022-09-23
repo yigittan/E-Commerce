@@ -66,8 +66,8 @@ class ProductMongoStorage:
         self.db.delete_one({'_id':ObjectId(product_id)})
         return product_id
 
-    def filter(self,key,value):
-        products = self.db.find({key:value})
+    def filter(self,filter_query):
+        products = self.db.find(filter_query)
         array =  [{
             "name":product['name'],
             "price":product['price'],

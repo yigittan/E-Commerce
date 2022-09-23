@@ -24,8 +24,5 @@ class ProductService:
 
 
     def filter(self,filter_query):
-        for key,value in filter_query.items():
-            array = self.storage.filter(key,value)
-            liste = array
-            liste +=array 
-        return liste
+        array = self.storage.filter(filter_query)
+        return array

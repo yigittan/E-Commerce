@@ -101,6 +101,9 @@ def params():
     brand = arg.get('brand')
     name = arg.get('name')
     color = arg.get('color')
+    size = arg.get('size')
+    price = arg.get('price')
+    description = arg.get('description')
     filter_query =  {}
     if brand is not None:
         filter_query.update({'brand':brand})
@@ -108,6 +111,12 @@ def params():
         filter_query.update({'color':color})
     if name is not None:
         filter_query.update({'name':name})
+    if size is not None:
+        filter_query.update({'size':size})
+    if price is not None:
+        filter_query.update({'price':price})
+    if description is not None:
+        filter_query.update({'description':description})
     products = products_service.filter(filter_query)
     return jsonify(products)
 
