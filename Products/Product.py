@@ -1,5 +1,9 @@
 class Product:
-    def __init__(self,name,price,brand,description,category,created_at,discount,size,color):
+    def __init__(self, name,
+                 price,
+                 brand,
+                 description,
+                 category, created_at, discount, size, color):
         self.name = name
         self.price = price
         self.brand = brand
@@ -8,4 +12,4 @@ class Product:
         self.created_at = created_at
         self.discount = discount
         self.size = size
-        self.color = color        
+        self.color = color

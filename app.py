@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify , session
+from flask import Flask, request, jsonify, session
 from flask_pymongo import PyMongo
 from products.products_service import ProductService
 from products.products_storage import ProductMongoStorage
@@ -10,12 +10,15 @@ from orders.orders_service import OrderService
 from orders.orders_storage import OrdersMongoStorage
 from users.User import User
 from products.Product import Product
-from bson.objectid import ObjectId
 from datetime import datetime
 
 app = Flask(__name__)
 
 client = PyMongo(app, uri="mongodb://localhost:27017/Commerce")
+
+STATUS_NO_CONTENT = 204
+STATUS_CREATED = 201
+
 
 p_storage = ProductMongoStorage(client)
 products_service = ProductService(p_storage)
@@ -26,17 +29,34 @@ users_service = UserService(u_storage)
 o_storage = OrdersMongoStorage(client)
 orders_service = OrderService(o_storage)
 
+
 def loginUser(email):
     user = users_service.getUser_by_email(email)
     session['logged_in'] = True
     session['email'] = email
     session['id'] = user['id']
 
+
+def isLogin(f):
+    def wrapper(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            return {'error': 'log in failed'}
+    return wrapper
+
+
 @app.route('/')
 def index():
     return {'messages': "You Are At Index Page :)"}
 
 # KULLANICI KAYDI REGİSTER
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return {'message':'log out is success'}
+
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -54,31 +74,33 @@ def register():
                 city, zip_code, street, building)
     res = users_service.create(user)
     baskets_service.create(res)
-    return res
+    return {'id': res}
 
 # KULLANICI GİRİŞİ LOG İN
 
-@app.route('/login',methods=['POST'])
+
+@app.route('/login', methods=['POST'])
 def login():
     body = request.get_json()
     email = body['email']
     candidatePassword = body['password']
     user = users_service.getUser_by_email(email)
     if (user):
-        if (users_service.check_password(email,candidatePassword)):
+        if (users_service.check_password(email, candidatePassword)):
             loginUser(email)
-            return jsonify({'messages':'Log in is success'})
+            return {'message':"log in is successful"}
         else:
-            return jsonify({'messages':"log in is failed"})
+            return jsonify({'messages': "log in is failed"})
 
 #  ÜRÜNLERİ LİSTELEMEK VE ÜRÜN EKLEMEK İÇİN
 
-@app.route('/products' , methods=['GET','POST'])
+
+@app.route('/products', methods=['GET', 'POST'])
 def products():
     if request.method == 'GET':
         products = products_service.get_all_products()
         if products is None:
-            return {'message':'Products not found'}
+            return {'message': 'Products not found'}
         return jsonify(products)
     if request.method == 'POST':
         body = request.get_json()
@@ -91,9 +113,11 @@ def products():
         discount = body['discount']
         size = body['size']
         color = body['color']
-        product = Product(name,price,brand,description,category,created_at,discount,size,color)
+        product = Product(name, price, brand, description,
+                          category, created_at, discount, size, color)
         res = products_service.create(product)
-        return jsonify(res)
+        return {'id': res}, STATUS_CREATED
+
 
 @app.route('/products/filter')
 def params():
@@ -104,48 +128,51 @@ def params():
     size = arg.get('size')
     price = arg.get('price')
     description = arg.get('description')
-    filter_query =  {}
+    filter_query = {}
     if brand is not None:
-        filter_query.update({'brand':brand})
+        filter_query.update({'brand': brand})
     if color is not None:
-        filter_query.update({'color':color})
+        filter_query.update({'color': color})
     if name is not None:
-        filter_query.update({'name':name})
+        filter_query.update({'name': name})
     if size is not None:
-        filter_query.update({'size':size})
+        filter_query.update({'size': size})
     if price is not None:
-        filter_query.update({'price':price})
+        filter_query.update({'price': price})
     if description is not None:
-        filter_query.update({'description':description})
+        filter_query.update({'description': description})
     products = products_service.filter(filter_query)
     return jsonify(products)
 
 
-@app.route('/products/<string:product_id>' , methods=['GET','PUT','DELETE'])
+@app.route('/products/<string:product_id>', methods=['GET', 'PUT', 'DELETE'])
 def productss(product_id):
     if request.method == 'GET':
         product = products_service.get_by_id(product_id)
         return jsonify(product)
-    
+
     if request.method == 'PUT':
         body = request.get_json()
         name = body['name']
         price = body['price']
-        brand= body['brand']
+        brand = body['brand']
         description = body['description']
         category = body['category']
         created_at = datetime.now()
         discount = body['discount']
         size = body['size']
         color = body['color']
-        product = Product(name,price,brand,description,category,created_at,discount,size,color)
-        res = products_service.update(product,product_id)
+        product = Product(name, price, brand, description,
+                          category, created_at, discount, size, color)
+        res = products_service.update(product, product_id)
         return jsonify(res)
 
     if request.method == 'DELETE':
-        return product_id
+        products_service.remove(product_id)
+        return {'id': product_id}
 
-@app.route('/users/<string:user_id>' , methods=['GET','DELETE','PUT'])
+
+@app.route('/users/<string:user_id>', methods=['GET', 'DELETE', 'PUT'])
 def users(user_id):
     if request.method == 'GET':
         user = users_service.get_by_id(user_id)
@@ -164,55 +191,62 @@ def users(user_id):
         building = body['building']
         user = User(name, surname, username, email, password,
                     city, zip_code, street, building)
-        res = users_service.update(user,user_id)
+        res = users_service.update(user, user_id)
         return jsonify(res)
 
     if request.method == 'DELETE':
+        basket = baskets_service.delete(user_id)
         return users_service.remove(user_id)
-        
-@app.route('/baskets/<string:basket_id>' , methods=['GET'])
-def basket(basket_id):
-    if request.method == 'GET':
-        basket = baskets_service.get_by_id(basket_id)
-        return jsonify(basket['products'])
 
-@app.route('/baskets/<string:basket_id>/products/<string:product_id>' , methods=['POST','DELETE'])
-def basket_cd(basket_id,product_id):
+
+@app.route('/baskets', methods=['GET'])
+@isLogin
+def basket():
+    user_id = session['id']
+    print(user_id)
+    if request.method == 'GET':
+        basket = baskets_service.get_by_id(user_id)
+        return jsonify(basket['products']) , session
+
+
+@app.route('/baskets/products/<string:product_id>', methods=['POST', 'DELETE'])
+def basket_cd(product_id):
+    user_id = session['id']
     if request.method == 'POST':
         product = products_service.get_by_id(product_id)
-        basket= baskets_service.get_by_id(basket_id)
+        basket = baskets_service.get_by_id(user_id)
         price = product['price'] + basket['price']
-        basket = baskets_service.add(basket_id,product_id,price)
-        return jsonify(basket['price'])
-
-    if request.method == 'DELETE':
-        basket = baskets_service.remove(basket_id,product_id)
+        basket = baskets_service.add(user_id, product_id, price)
         return jsonify(basket['products'])
 
-@app.route('/baskets/<string:basket_id>/clear' , methods=['DELETE'])
-def basket_clear(basket_id):
-    basket  = baskets_service.clear(basket_id)
-    basket['price'] = 0
-    return jsonify(basket['products'])   # basket bırakırsak 'products' = [......] array halinde geliyor
+    if request.method == 'DELETE':
+        basket = baskets_service.remove(user_id, product_id)
+        return jsonify(basket['products'])
 
-@app.route('/orders/<string:basket_id>' , methods=['GET','POST'])
-def order(basket_id):
+
+@app.route('/baskets/clear', methods=['DELETE'])
+def basket_clear():
+    user_id = session['id']
+    basket = baskets_service.clear(user_id)
+    basket['price'] = 0
+    # basket bırakırsak 'products' = [......] array halinde geliyor
+    return jsonify(basket['products'])
+
+
+@app.route('/orders', methods=['GET', 'POST'])
+def order():
     if request.method == 'POST':
         user_id = session['id']
-        basket = baskets_service.get_by_id(basket_id)
+        basket = baskets_service.get_by_id(user_id)
         price = basket['price']
         products_id = [product_id for product_id in basket['products']]
-        res = orders_service.create(products_id,user_id,price)
+        res = orders_service.create(products_id, user_id, price)
         return res
-    
-    if request.method =='GET':
+
+    if request.method == 'GET':
         user_id = session['id']
         order = orders_service.get(user_id)
         return jsonify(order['products'])
-
-
-    
-
 
 
 if __name__ == '__main__':
