@@ -30,14 +30,14 @@ o_storage = OrdersMongoStorage(client)
 orders_service = OrderService(o_storage)
 
 
-def loginUser(email):
+def auth_user(email):
     user = users_service.getUser_by_email(email)
     session['logged_in'] = True
     session['email'] = email
     session['id'] = user['id']
 
 
-def isLogin(f):
+def auth(f):
     def wrapper(*args, **kwargs):
         if 'logged_in' in session:
             return f(*args, **kwargs)
@@ -87,7 +87,7 @@ def login():
     user = users_service.getUser_by_email(email)
     if (user):
         if (users_service.check_password(email, candidatePassword)):
-            loginUser(email)
+            auth_user(email)
             return {'message':"log in is successful"}
         else:
             return jsonify({'messages': "log in is failed"})
@@ -200,7 +200,7 @@ def users(user_id):
 
 
 @app.route('/baskets', methods=['GET'])
-@isLogin
+@auth
 def basket():
     user_id = session['id']
     print(user_id)
@@ -234,6 +234,7 @@ def basket_clear():
 
 
 @app.route('/orders', methods=['GET', 'POST'])
+@auth
 def order():
     if request.method == 'POST':
         user_id = session['id']
